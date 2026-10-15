@@ -1,1 +1,31 @@
-
+{
+  "simulation_only": true,
+  "heart_rate": {
+    "warning_min": 50,
+    "warning_max": 110,
+    "critical_min": 40,
+    "critical_max": 130
+  },
+  "spo2": {
+    "warning_min": 90,
+    "critical_max": 85
+  },
+  "respiratory_rate": {
+    "warning_min": 10,
+    "warning_max": 24,
+    "critical_min": 6,
+    "critical_max": 30
+  },
+  "temperature": {
+    "warning_min": 35.5,
+    "warning_max": 38.0,
+    "critical_min": 34.0,
+    "critical_max": 40.0
+  },
+  "alert_states": [
+    "NORMAL",
+    "WARNING",
+    "CRITICAL",
+    "DATA_FAULT"
+  ]
+}
