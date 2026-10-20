@@ -2,6 +2,10 @@ CREATE TABLE IF NOT EXISTS patients (
     patient_id TEXT PRIMARY KEY,
     bed_id TEXT NOT NULL,
     display_name TEXT NOT NULL,
+    ward TEXT NOT NULL DEFAULT 'ICU-North',
+    room TEXT NOT NULL DEFAULT '101',
+    bed TEXT NOT NULL DEFAULT 'Bed-A',
+    current_scenario TEXT NOT NULL DEFAULT 'Normal Recovery',
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -36,7 +40,9 @@ CREATE TABLE IF NOT EXISTS alert_history (
     severity TEXT NOT NULL,
     trigger_reason TEXT,
     acknowledged INTEGER NOT NULL DEFAULT 0,
+    acknowledged_at TEXT,
     resolved INTEGER NOT NULL DEFAULT 0,
+    resolved_at TEXT,
     FOREIGN KEY (patient_id) REFERENCES patients(patient_id),
     FOREIGN KEY (scenario_id) REFERENCES test_scenarios(scenario_id)
 );

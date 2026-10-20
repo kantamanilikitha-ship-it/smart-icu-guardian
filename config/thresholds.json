@@ -8,6 +8,7 @@
   },
   "spo2": {
     "warning_min": 90,
+    "critical_min": 85,
     "critical_max": 85
   },
   "respiratory_rate": {
