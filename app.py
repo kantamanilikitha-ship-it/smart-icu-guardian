@@ -1016,10 +1016,10 @@ elif selected_page_key == "engineering":
 
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
-# Streaming Loop Tick
-# -----------------------------------------------------------------------------
 if st.session_state.auto_stream:
-    time.sleep(st.session_state.stream_speed)
-    st.session_state.sim_step += 1
-    run_telemetry_tick(st.session_state.sim_step)
-    st.rerun()
+    @st.fragment(run_every=st.session_state.stream_speed)
+    def telemetry_stream():
+        st.session_state.sim_step += 1
+        run_telemetry_tick(st.session_state.sim_step)
+
+    telemetry_stream()
