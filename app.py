@@ -1015,9 +1015,9 @@ elif selected_page_key == "engineering":
     render_engineering_dashboard()
 
 # -----------------------------------------------------------------------------
-# Streaming Loop Tick
 # -----------------------------------------------------------------------------
 # Streaming Loop Tick
+# -----------------------------------------------------------------------------
 if st.session_state.auto_stream:
     time.sleep(st.session_state.stream_speed)
     st.session_state.sim_step += 1
