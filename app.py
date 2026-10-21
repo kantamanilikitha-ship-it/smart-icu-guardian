@@ -947,18 +947,47 @@ def render_engineering_dashboard():
                     with open(tb_path, "r", encoding="utf-8") as f:
                         st.code(f.read(), language="verilog")
 
-    # 3. AI Explainer Tab
+      # 3. AI Explainer Tab
     with tab_ai:
         st.markdown("### 🧠 AI Clinical Explainer & Safety Isolation Guardrails")
         st.markdown("""
-        > **Deterministic Safety Isolation Principle**: Medical telemetry alarm severity is computed strictly 
-        > by the Verilog Safety FSM. The AI Explainer agent provides physiological education and differential 
+        > **Deterministic Safety Isolation Principle**: Medical telemetry alarm severity is computed strictly
+        > by the Verilog Safety FSM. The AI Explainer agent provides physiological education and differential
         > diagnoses, but **NEVER decides, overrides, or alters safety classification**.
         """)
-        api_key_input = st.text_input("Optional LLM API Key (Groq / OpenAI)", type="password", help="Leave blank for 100% offline Deterministic Clinical Engine.")
-        if api_key_input:
-            st.session_state.ai_explainer = AIClinicalExplainer(api_key=api_key_input)
 
+        api_key_input = st.text_input(
+            "Optional LLM API Key (Groq / OpenAI)",
+            type="password",
+            help="Enter your API key to enable AI explanations."
+        )
+
+        if api_key_input:
+            st.session_state.ai_explainer = AIClinicalExplainer(
+                api_key=api_key_input
+            )
+
+            st.markdown("### 🧠 Generate AI Explanation")
+            if st.button("Explain Current Patient Readings"):
+                try:
+                    patient_data = get_patient_by_id(target_pid)
+                    latest_reading = get_latest_reading(target_pid)
+
+                    st.write("**Patient:**", patient_data["display_name"])
+                    st.write("**Latest readings:**")
+                    st.json(latest_reading)
+
+                    explanation = st.session_state.ai_explainer.explain_alert(
+                        severity=latest_reading.get("severity", "NORMAL"),
+                        trigger_reasons=[],
+                        vitals=latest_reading,
+                        patient_name=patient_data.get("display_name", "ICU Patient"),
+                        bed_id=patient_data.get("bed", "BED-01"),
+                    )
+                    st.write(explanation.get("explanation", explanation))
+
+                except Exception as e:
+                    st.error(f"AI explanation failed: {e}")
     # 4. Database Tab
     with tab_db:
         st.markdown("### 🗄️ SQLite Database Records (`smart_icu.db`)")
