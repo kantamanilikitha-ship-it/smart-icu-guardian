@@ -596,18 +596,33 @@ def render_bedside_dashboard():
 
     # Bedside Patient Selector
     st.sidebar.markdown("### 🛌 Bedside Station Selector")
-    current_pid = selected_bedside_patient_query if selected_bedside_patient_query in patient_ids else "P101"
+    current_pid = (
+        st.query_params.get("patient_id", "P101")
+    )
+
+    if current_pid not in patient_ids:
+        current_pid = patient_ids[0] if patient_ids else None
+
+    if not patient_ids:
+        st.warning("No patients are available.")
+        return
+
+    if "bedside_patient_selector" not in st.session_state:
+        st.session_state.bedside_patient_selector = current_pid
+
     chosen_pid = st.sidebar.selectbox(
         "Select Bedside Patient",
         options=patient_ids,
-        format_func=lambda pid: f"{pid} - {get_patient_by_id(pid)['display_name']} ({get_patient_by_id(pid)['ward']}-{get_patient_by_id(pid)['bed']})",
-        index=patient_ids.index(current_pid)
+        format_func=lambda pid: (
+            f"{pid} - {get_patient_by_id(pid)['display_name']} "
+            f"({get_patient_by_id(pid)['ward']}-"
+            f"{get_patient_by_id(pid)['bed']})"
+        ),
+        key="bedside_patient_selector",
     )
 
-    if chosen_pid != selected_bedside_patient_query:
-        st.query_params["patient_id"] = chosen_pid
-        st.rerun()
-
+    if st.session_state.bedside_patient_selector != st.query_params.get("patient_id"):
+       st.query_params["patient_id"] = st.session_state.bedside_patient_selector
     patient = get_patient_by_id(chosen_pid)
     latest_reading = get_latest_reading(chosen_pid)
     active_alerts = get_active_alerts(chosen_pid)
@@ -973,6 +988,7 @@ elif selected_page_key == "engineering":
 # -----------------------------------------------------------------------------
 # Streaming Loop Tick
 # -----------------------------------------------------------------------------
+# Streaming Loop Tick
 if st.session_state.auto_stream:
     time.sleep(st.session_state.stream_speed)
     st.session_state.sim_step += 1
